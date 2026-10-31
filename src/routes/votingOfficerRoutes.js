@@ -1,7 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const votingOfficerController = require('../controllers/votingOfficerController');
+const votingOfficerController = require("../controllers/votingOfficerController");
+const { requireRole } = require("../utils/auth");
 
-router.get('/dashboard', votingOfficerController.getVotingOfficerDashboard);
+router.get("/dashboard", requireRole("Officer"), votingOfficerController.getVotingOfficerDashboard);
 
 module.exports = router;

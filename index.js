@@ -1,27 +1,14 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
-const userRoutes = require('./src/routes/userRoutes');
-const votingRoutes = require('./src/routes/votingRoutes');
-const votingOfficerRoutes = require('./src/routes/votingOfficerRoutes');
-const { PORT } = process.env;
+require("dotenv").config();
+const path = require("path");
+const express = require("express");
+const { createApp } = require("./src/app");
 
-const app = express();
+const app = createApp();
 
-app.use(cors());
-app.use(bodyParser.json());
+// Serve the built React client (npm run client:build) from the same server.
+const clientDist = path.join(__dirname, "client", "dist");
+app.use(express.static(clientDist));
+app.get("*", (req, res) => res.sendFile(path.join(clientDist, "index.html")));
 
-app.use('/api/user', userRoutes);
-app.use('/api/voting', votingRoutes);
-app.use('/api/voting-officer', votingOfficerRoutes);
-
-app.use(express.static(path.join(__dirname, './online-voting-frontend/my-app/build')));
-app.get('*', function(req, res){
-  res.sendFile(path.join(__dirname, './online-voting-frontend/my-app/build/index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const port = Number(process.env.PORT || 4000);
+app.listen(port, () => console.log(`Voting system running on http://localhost:${port}`));
